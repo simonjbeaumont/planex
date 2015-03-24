@@ -1,10 +1,15 @@
-MANIFEST
-build
-dist
-.rpmmacros
-planex-build-root
-*.pyc
-srpmutil/srpmutil
-*.swp
-tags
+# Build output
+build/
+dist/
+planex.egg-info/
+
+# Testing
 .coverage
+
+# Python helper files
+.ropeproject
+tags
+
+# Other cruft
+*.pyc
+*.swp
