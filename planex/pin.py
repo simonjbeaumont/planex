@@ -278,6 +278,18 @@ def print_rules(args):
             os.remove(pin_spec_path)
 
 
+def release(args):
+    """
+    Entry point for the 'release' sub-command.
+    Generates a new release for the specified package. It will:
+        * (todo) Tag the source repository with the version given
+        * (todo) Generate a changelog from the git log for the user to confirm
+        * (todo) Overwrite the spec file with the new version and changelog
+        * (todo) Prompt the user to push the tags to the right remote
+    """
+    pass
+
+
 def parse_args_or_exit(argv=None):
     """
     Parse command line options
@@ -319,6 +331,11 @@ def parse_args_or_exit(argv=None):
     parser_rules = subparsers.add_parser('rules', help='Print pin make rules')
     parser_rules.add_argument('deps_path', help='Path to deps file')
     parser_rules.set_defaults(func=print_rules)
+    # parser for the 'release' command
+    parser_release = subparsers.add_parser(
+        'release', help='Generate new release from current pin')
+    parser_release.add_argument('spec_file', help='Spec file for package')
+    parser_release.set_defaults(func=release)
 
     argcomplete.autocomplete(parser)
     return parser.parse_args(argv)
