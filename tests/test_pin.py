@@ -7,6 +7,7 @@ import tempfile
 import os
 import shutil
 from planex.pin import tag as git_tag
+from planex.pin import describe as git_describe
 from planex.util import run
 
 
@@ -42,3 +43,16 @@ class GitTests(unittest.TestCase):
                             "tag"])['stdout'].split()
         new_tags = [t for t in current_tags if t not in old_tags]
         self.assertEqual(["my-tag"], new_tags)
+
+    def test_describe(self):
+        commit_cmd = ["git", "--git-dir=%s" % self.dotgitdir,
+                      "commit", "--allow-empty", "-m", "Extra commit"]
+        sha_cmd = ["git", "--git-dir=%s" % self.dotgitdir, "rev-parse", "HEAD"]
+        for tag in ["0.0", "0.1", "0.2"]:
+            git_tag(self.repo_path, tag)
+            self.assertEqual(git_describe(self.repo_path), tag)
+            for i in range(1, 3):
+                run(commit_cmd)
+                sha = run(sha_cmd)['stdout'].strip()[:7]
+                expected = "%s+%d+g%s" % (tag, i, sha)
+                self.assertEqual(git_describe(self.repo_path), expected)
