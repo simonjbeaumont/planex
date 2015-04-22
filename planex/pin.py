@@ -333,16 +333,25 @@ def release(args):
     """
     pins = parse_pins_file(args)
     normalised_path = os.path.relpath(args.spec_file)
+
     if normalised_path not in pins:
         sys.exit("%s: Cannot release %s, package not pinned." %
                  (sys.argv[0], normalised_path))
 
+    if not re.match(r'^v?\d\.\d\.\d$', args.version):
+        sys.exit("%s: Invalid verison: %s. Not of form [v]<maj>.<min>.<mic>" %
+                 (sys.argv[0], args.version))
+
+    new_version = (args.version
+                   if args.version.startswith('v')
+                   else 'v' + args.version)
     orig_version = version_of_spec_file(normalised_path)
     template = []
     for (_, pin_target) in pins[normalised_path].iteritems():
         repo, _, treeish = pin_target.partition('#')
         template.extend(shortlog(repo, "v%s" % orig_version, treeish))
     changelog = get_from_editor(template)
+    tag(repo, new_version, treeish)
     print changelog
 
 
